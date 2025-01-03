@@ -87,7 +87,7 @@ class BillSplitter:
         item = ''
         iteration = 1
         while item != 'done':
-            item_list = [0] * len(self._people_list)
+            item_list = [''] * len(self._people_list)
             print("\n_________________________________________")
             item = input(f"What is the name of item {iteration}? (Type 'done' if done): ")
             if item.lower() == 'done':
@@ -98,10 +98,13 @@ class BillSplitter:
             if split == 1:
                 self.print_name_list()
                 name = int(input(f"Who ordered it? Please give number: "))
-                item_list[name] = amount/split
+                item_list[name] = amount
             elif split == self._total_people:
                 for index in range(1, split+1):
                     item_list[index] = amount/split
+            elif split > self._total_people:
+                print("Invalid number. Try again")
+                continue
             else:
                 self.print_name_list()
                 for index in range(1, split+1):
@@ -113,31 +116,27 @@ class BillSplitter:
 
     def add_check_totals(self):
         total_row = ['Total']
-        for index in range(1, len(self._people_list)+1):
+        for index in range(1, len(self._people_list)):
             total = 0
             for row in self._rows:
-                total += row[index]
-            total_row.append(total)
-        self.print_table()
-        for row in self._rows:
-            total = 0
-            total += row[index]
-            total_row.append(total)
+                if row[index] != '':
+                    total += row[index]
+            total_row.append(round(total,2))
         self._rows.append(total_row)
         self._people_list.append('Total Check')
         for item in self._rows:
-            total = 0
+            total_column = 0
             for index in range(1, len(item)):
-                total += item[index]
-            item.append(total)
-
-
+                if item[index] != '':
+                    total_column += item[index]
+            item.append(round(total_column,2))
+        self.print_table()
 
     def add_tax_tip(self):
         tax_row = ['Tax']
         tip_row = ['Tip']
-        tax = round(self._starting_dict['tax']/(len(self._people_list)-1),2)
-        tip = round(self._starting_dict['tip']/(len(self._people_list)-1),2)
+        tax = self._starting_dict['tax']/(len(self._people_list)-1)
+        tip = self._starting_dict['tip']/(len(self._people_list)-1)
         for index in range(1, len(self._people_list)):
             tax_row.append(tax)
             tip_row.append(tip)
@@ -145,34 +144,24 @@ class BillSplitter:
         self._rows.append(tip_row)
         self.add_check_totals()
 
-
-
-
-
     def print_table(self):
+        # for index in range(1, len(self._people_list)):
+        #     for index in range(1, len(self._people_list):
+        #         self._rows[index] = round(self._rows[index],2)
+        self._rows[-1] = [
+            f"\033[1;33m{item}\033[0m" if isinstance(item, (str, float, int)) else item
+            for item in self._rows[-1]]
         print(tabulate(self._rows, self._people_list, tablefmt='fancy_grid'))
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 if __name__ == "__main__":
-    print(r"""
+    print(r"""    
+    ██████  ███████ ███████ ████████  █████  ██    ██ ██████   █████  ███    ██ ████████ 
+    ██   ██ ██      ██         ██    ██   ██ ██    ██ ██   ██ ██   ██ ████   ██    ██    
+    ██████  █████   ███████    ██    ███████ ██    ██ ██████  ███████ ██ ██  ██    ██    
+    ██   ██ ██           ██    ██    ██   ██ ██    ██ ██   ██ ██   ██ ██  ██ ██    ██    
+    ██   ██ ███████ ███████    ██    ██   ██  ██████  ██   ██ ██   ██ ██   ████    ██                                                            
+
     ██████  ██ ██      ██          ███████ ██████  ██      ██ ████████ ████████ ███████ ██████  
     ██   ██ ██ ██      ██          ██      ██   ██ ██      ██    ██       ██    ██      ██   ██ 
     ██████  ██ ██      ██          ███████ ██████  ██      ██    ██       ██    █████   ██████  
