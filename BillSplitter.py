@@ -16,13 +16,6 @@ class BillSplitter:
 
     def initial(self):
         total_dict = self._starting_dict
-        # start = input('Are you ready to split the bill?: ').lower()
-        # if start == 'no':
-        #     print("Ok thank you. Goodbye!")
-        #     exit()
-        # if start != 'yes':
-        #     print("Invalid Input. Try again")
-        #     self.initial()
         bill = float(input("How much is the bill without tax and tip?: "))
         total_dict['bill'] = bill
         tax = float(input("How much tax did you pay?: "))
@@ -91,45 +84,52 @@ class BillSplitter:
         self.double_check_people()
 
     def enter_item(self):
-        done = 'no'
+        item = ''
         iteration = 1
-        while done != 'yes':
+        while item != 'done':
             item_list = [0] * len(self._people_list)
             print("\n_________________________________________")
             item = input(f"What is the name of item {iteration}? (Type 'done' if done): ")
-            if item == 'done':
+            if item.lower() == 'done':
                 break
             item_list[0] = item
             amount = float(input("What is the amount?: "))
             split = int(input("How many people is this item split by?: "))
-            self.print_name_list()
-            for index in range(1, split+1):
-                name = int(input(f"Who is person {index}? Please give number: "))
+            if split == 1:
+                self.print_name_list()
+                name = int(input(f"Who ordered it? Please give number: "))
                 item_list[name] = amount/split
+            elif split == self._total_people:
+                for index in range(1, split+1):
+                    item_list[index] = amount/split
+            else:
+                self.print_name_list()
+                for index in range(1, split+1):
+                    name = int(input(f"Who is person {index}? Please give number: "))
+                    item_list[name] = amount/split
             iteration +=1
             self._rows.append(item_list)
-            done = input("Are you done?: ").lower()
         self.add_tax_tip()
 
-    # def add_check_totals(self):
-    #     total_row = ['Total']
-    #     for index in range(1, len(self._people_list)+1):
-    #         total = 0
-    #         for row in self._rows:
-    #             total += row[index]
-    #         total_row.append(total)
-    #     self.print_table()
-        # for row in self._rows:
-        #     total = 0
-        #     total += row[index]
-        #     total_row.append(total)
-        # self._rows.append(total_row)
-        # self._people_list.append('Total Check')
-        # for item in self._rows:
-        #     total = 0
-        #     for index in range(1, len(item)):
-        #         total += item[index]
-        #     item.append(total)
+    def add_check_totals(self):
+        total_row = ['Total']
+        for index in range(1, len(self._people_list)+1):
+            total = 0
+            for row in self._rows:
+                total += row[index]
+            total_row.append(total)
+        self.print_table()
+        for row in self._rows:
+            total = 0
+            total += row[index]
+            total_row.append(total)
+        self._rows.append(total_row)
+        self._people_list.append('Total Check')
+        for item in self._rows:
+            total = 0
+            for index in range(1, len(item)):
+                total += item[index]
+            item.append(total)
 
 
 
