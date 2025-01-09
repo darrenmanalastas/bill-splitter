@@ -145,13 +145,14 @@ class BillSplitter:
         self.add_check_totals()
 
     def print_table(self):
-        # for index in range(1, len(self._people_list)):
-        #     for index in range(1, len(self._people_list):
-        #         self._rows[index] = round(self._rows[index],2)
+        for item in range(0, len(self._rows)-1):
+            for amount in range(1, len(self._people_list)):
+                if self._rows[item][amount] != '':
+                    self._rows[item][amount] = round(self._rows[item][amount], 2)
         self._rows[-1] = [
             f"\033[1;33m{item}\033[0m" if isinstance(item, (str, float, int)) else item
             for item in self._rows[-1]]
-        print(tabulate(self._rows, self._people_list, tablefmt='fancy_grid'))
+        print(tabulate(self._rows, self._people_list, tablefmt='fancy_grid', numalign = 'center'))
 
 
 if __name__ == "__main__":
